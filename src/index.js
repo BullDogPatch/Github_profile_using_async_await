@@ -1,0 +1,54 @@
+import "./styles.css";
+
+async function getData(url) {
+  let data = await fetch(url);
+  let json = await data.json();
+
+  return await json;
+}
+
+function createElement(repoData) {
+  const ulList = document.createElement("ul");
+  //const headingTextNode = document.createTextNode("Github Profile");
+  if (Array.isArray(repoData)) {
+    repoData.forEach(repoItem => {
+      console.log("Repo Item: ", repoItem.name);
+      const listItem = document.createElement("li");
+      const listItemTextNode = document.createTextNode(repoItem.name);
+
+      listItem.appendChild(listItemTextNode);
+      ulList.appendChild(listItem);
+    });
+    document.querySelector("#app").appendChild(ulList);
+  } else {
+    return;
+  }
+}
+
+function createProfilePicture(profileData) {
+  if (profileData.avatar_url && profileData.name) {
+    const heading = document.createElement("h1");
+    const headingTextNode = document.createTextNode(
+      `Github Profile: ${profileData.name}`
+    );
+
+    heading.appendChild(headingTextNode);
+    document.querySelector("#app").appendChild(heading);
+
+    let image = document.createElement("img");
+    image.src = profileData.avatar_url;
+    image.width = 100;
+    document.querySelector("#app").appendChild(image);
+  } else {
+    return;
+  }
+}
+
+getData("https://api.github.com/users/bulldogpatch").then(data => {
+  console.table("Data: ", data);
+  createProfilePicture(data);
+});
+
+getData("https://api.github.com/users/bulldogpatch/repos").then(data => {
+  createElement(data);
+});
